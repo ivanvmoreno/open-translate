@@ -5,13 +5,13 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
-    python3 python3-pip python3-venv \
+    python3.11 python3-pip python3.11-venv \
     ca-certificates curl \
     build-essential && \
     rm -rf /var/lib/apt/lists/*
 
 # venv for clean copy into runtime
-RUN python3 -m venv /opt/venv
+RUN python3.11 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt /tmp/requirements.txt
@@ -41,12 +41,12 @@ ENV NLLB_MODEL_SIZE="600M" \
 
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
-    python3 \
+    python3.11 \
     ca-certificates \
     curl && \
     rm -rf /var/lib/apt/lists/* && \
-    ln -sf /usr/bin/python3 /usr/bin/python
-
+    ln -sf /usr/bin/python3.11 /usr/bin/python && \
+    ln -sf /usr/bin/python3.11 /usr/bin/python3
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
@@ -57,6 +57,6 @@ RUN chmod +x /start.sh
 
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -fsS "http://localhost:${PORT:-8000}/health" || exit 1
+    CMD curl -fsS "http://localhost:${PORT:-8000}/health" || exit 1
 
 CMD ["/start.sh"]
