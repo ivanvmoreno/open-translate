@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "transformers",
+    "accelerate",
+    "sentencepiece",
+    "protobuf",
+    "safetensors",
+    "hf-transfer",
+    "numpy",
+    "deepspeed",
+    "pycountry",
+    "langdetect",
+]
+name = "open-translate"
+version = "0.1.0"
+description = "Open Translate - Open-source LLM translation API"
+authors = [{ name = "Iván Moreno", email = "ivan@ivan.build" }]
+requires-python = ">=3.12"
