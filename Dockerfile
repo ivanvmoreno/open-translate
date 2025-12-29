@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.6.3-runtime-ubuntu22.04 AS builder
+FROM nvidia/cuda:12.6.3-devel-ubuntu22.04 AS builder
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
@@ -20,7 +20,7 @@ RUN pip install --upgrade pip setuptools wheel && \
     rm /tmp/requirements.txt
 
 
-FROM nvidia/cuda:12.6.3-runtime-ubuntu22.04 AS runtime
+FROM nvidia/cuda:12.6.3-devel-ubuntu22.04 AS runtime
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
