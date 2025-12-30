@@ -1,4 +1,5 @@
 import os
+import re
 from typing import List, Optional, Dict, Any, Union
 
 import torch
@@ -131,7 +132,8 @@ def _preferred_variant(nllb_codes: List[str]) -> str:
 def _build_language_maps():
     global ISO_TO_NLLB, ISO_NAME
 
-    codes = sorted(tokenizer.lang_code_to_id.keys())
+    lang_code_to_id = _get_lang_code_to_id()
+    codes = sorted(lang_code_to_id.keys())
     by_iso3: Dict[str, List[str]] = {}
     for c in codes:
         if "_" not in c:
@@ -156,7 +158,7 @@ def _build_language_maps():
 
     # BCP-47 region/script special-cases
     for k, v in BCP47_SPECIALS.items():
-        if v in tokenizer.lang_code_to_id:
+        if v in lang_code_to_id:
             ISO_TO_NLLB[k] = v
 
 
@@ -178,11 +180,22 @@ def _resolve_to_nllb(code: str) -> str:
 
 
 def _lang_to_id(nllb_tgt: str) -> int:
-    if nllb_tgt not in tokenizer.lang_code_to_id:
+    lang_code_to_id = _get_lang_code_to_id()
+    if nllb_tgt not in lang_code_to_id:
         raise HTTPException(
             status_code=400, detail=f"Unknown NLLB target code '{nllb_tgt}'"
         )
-    return int(tokenizer.lang_code_to_id[nllb_tgt])
+    return int(lang_code_to_id[nllb_tgt])
+
+
+_NLLB_LANG_RE = re.compile(r"^[a-z]{3}_[A-Za-z]{4}$")
+
+
+def _get_lang_code_to_id() -> Dict[str, int]:
+    if hasattr(tokenizer, "lang_code_to_id"):
+        return tokenizer.lang_code_to_id
+    vocab = tokenizer.get_vocab()
+    return {tok: idx for tok, idx in vocab.items() if _NLLB_LANG_RE.match(tok)}
 
 
 def _detect_iso639_1(text: str) -> Optional[str]:
@@ -219,7 +232,7 @@ def _startup():
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, use_fast=True)
     model = AutoModelForSeq2SeqLM.from_pretrained(
         MODEL_ID,
-        torch_dtype=DTYPE,
+        dtype=DTYPE,
         low_cpu_mem_usage=True,
     )
     model.eval()
