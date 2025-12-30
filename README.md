@@ -15,7 +15,7 @@ This project provides a robust, private, and cost-effective alternative to comme
 * **💰 Cost Efficiency:** Run on your own GPU infrastructure. Ideal for high-volume translation tasks.
 * **🔒 Data Privacy:** No external API calls mean your content never leaves your control.
 * **🔄 Drop-in Compatibility:** Implements the standard `POST /language/translate/v2` API surface. Switch existing applications simply by changing the base URL.
-* **🌍 Advanced Models:** Leverages Meta's NLLB-200 (No Language Left Behind), supporting 200+ languages.
+* **🌍 Advanced Models:** Leverages Meta's [NLLB-200 (No Language Left Behind)](https://arxiv.org/abs/2207.04672), supporting 200+ languages.
 * **🚀 High Performance:** Optimized for throughput with DeepSpeed and Tensor Parallelism, capable of handling heavy concurrent loads.
 
 ---
@@ -107,7 +107,7 @@ curl "http://localhost:8000/language/translate/v2/languages"
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
-| `NLLB_MODEL_SIZE` | `600M` | Model size: `600M`, `1.3B`, `3.3B` |
+| `NLLB_MODEL_SIZE` | `600M-distilled` | Model size: `600M`, `600M-distilled`, `1.3B`, `1.3B-distilled`, or `3.3B` |
 | `NLLB_MODEL_ID` | *(None)* | HF model override |
 | `TP_SIZE` | `auto` | Tensor Parallel size |
 | `DTYPE` | `fp16` | `fp16`, `bf16`, or `fp32` |
