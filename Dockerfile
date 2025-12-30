@@ -26,7 +26,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
 # Hugging Face cache
-ENV HF_HOME="/runpod-volume/.cache/huggingface/"
+ENV HF_HOME="/workspace/.cache/huggingface/"
 ENV HF_HUB_ENABLE_HF_TRANSFER="1"
 
 # NLLB variables
