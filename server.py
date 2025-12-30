@@ -1,6 +1,7 @@
 import os
 import re
-from typing import List, Optional, Dict, Any, Union
+import threading
+from typing import Any, Dict, List, Optional, Union
 
 import torch
 import deepspeed
@@ -83,6 +84,7 @@ MAX_INPUT_LENGTH = int(os.getenv("MAX_INPUT_LENGTH", "1024"))
 tokenizer = None
 model = None
 ds_engine = None
+_MODEL_LOCK = threading.Lock()
 
 ISO_TO_NLLB: Dict[str, str] = {}
 ISO_NAME: Dict[str, str] = {}
@@ -263,28 +265,29 @@ def _translate_batch(
 
     forced_bos_token_id = _lang_to_id(tgt_nllb)
 
-    tokenizer.src_lang = src_nllb
-    enc = tokenizer(
-        texts,
-        return_tensors="pt",
-        padding=True,
-        truncation=gen.get("truncate_input", True),
-        max_length=MAX_INPUT_LENGTH,
-    )
-    if torch.cuda.is_available():
-        enc = {k: v.to("cuda") for k, v in enc.items()}
+    with _MODEL_LOCK:
+        tokenizer.src_lang = src_nllb
+        enc = tokenizer(
+            texts,
+            return_tensors="pt",
+            padding=True,
+            truncation=gen.get("truncate_input", True),
+            max_length=MAX_INPUT_LENGTH,
+        )
+        if torch.cuda.is_available():
+            enc = {k: v.to("cuda") for k, v in enc.items()}
 
-    gen_model = ds_engine.module if ds_engine is not None else model
-    generated = gen_model.generate(
-        **enc,
-        forced_bos_token_id=forced_bos_token_id,
-        max_new_tokens=gen.get("max_new_tokens", 128),
-        num_beams=gen.get("num_beams", 1),
-        do_sample=gen.get("do_sample", False),
-        temperature=gen.get("temperature", 1.0),
-        top_p=gen.get("top_p", 1.0),
-    )
-    return tokenizer.batch_decode(generated, skip_special_tokens=True)
+        gen_model = ds_engine.module if ds_engine is not None else model
+        generated = gen_model.generate(
+            **enc,
+            forced_bos_token_id=forced_bos_token_id,
+            max_new_tokens=gen.get("max_new_tokens", 128),
+            num_beams=gen.get("num_beams", 1),
+            do_sample=gen.get("do_sample", False),
+            temperature=gen.get("temperature", 1.0),
+            top_p=gen.get("top_p", 1.0),
+        )
+        return tokenizer.batch_decode(generated, skip_special_tokens=True)
 
 
 @app.get("/health")
