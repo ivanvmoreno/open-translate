@@ -30,7 +30,7 @@ ENV HF_HOME="/workspace/.cache/huggingface/"
 ENV HF_HUB_ENABLE_HF_TRANSFER="1"
 
 # NLLB variables
-ENV NLLB_MODEL_SIZE="600M-distilled" \
+ENV NLLB_MODEL_SIZE="1.3B-distilled" \
     NLLB_MODEL_ID="" \
     TP_SIZE="auto" \
     DTYPE="fp16" \

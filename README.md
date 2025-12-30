@@ -107,7 +107,7 @@ curl "http://localhost:8000/language/translate/v2/languages"
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
-| `NLLB_MODEL_SIZE` | `600M-distilled` | Model size: `600M`, `600M-distilled`, `1.3B`, `1.3B-distilled`, or `3.3B` |
+| `NLLB_MODEL_SIZE` | `1.3B-distilled` | Model size: `600M`, `600M-distilled`, `1.3B`, `1.3B-distilled`, or `3.3B` |
 | `NLLB_MODEL_ID` | *(None)* | HF model override |
 | `TP_SIZE` | `auto` | Tensor Parallel size |
 | `DTYPE` | `fp16` | `fp16`, `bf16`, or `fp32` |
@@ -122,3 +122,13 @@ curl "http://localhost:8000/language/translate/v2/languages"
 We support standard **ISO 639-1** (e.g., `es`, `en`) and **BCP-47** (e.g., `zh-TW`, `pt-BR`) codes, automatically mapping them to NLLB's internal representation.
 
 For a full list of over 200 supported languages and their codes, see **[LANGUAGES.md](./LANGUAGES.md)**.
+
+---
+
+## 💾 VRAM Requirement Guide
+
+| Model Size      | FP16 / BF16 | FP32    |
+|-----------------|-------------|---------|
+| `600M` / `600M-distilled` | ~3 GB      | ~5 GB  |
+| `1.3B` / `1.3B-distilled` | ~5 GB      | ~9 GB |
+| `3.3B`           | ~9 GB     | ~15 GB |
