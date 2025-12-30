@@ -241,10 +241,9 @@ def _startup():
         tp_size = pick_tp_size()
         ds_engine = deepspeed.init_inference(
             model=model,
-            mp_size=tp_size,
             dtype=DTYPE,
-            replace_method="auto",
             replace_with_kernel_inject=True,
+            tensor_parallel={"tp_size": tp_size},
         )
     else:
         ds_engine = None
